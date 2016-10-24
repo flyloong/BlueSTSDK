@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 #BlueST SDK
 
 BlueST is a multi-platform library (Android and iOS supported) that permits easy access to the data exported by a Bluetooth Low Energy (BLE) device that implements the BlueST protocol.
@@ -238,8 +237,3 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-=======
-# BlueSTSDK
-Bluetooth low energy Sensors Technology Software Development Kit (Android version)modified by Libin
->>>>>>> 2974b5a8aac37285a008ba98bbfff84be5cc0791
