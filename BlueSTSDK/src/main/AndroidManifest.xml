@@ -1,0 +1,18 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.st.BlueSTSDK">
+
+    <!-- install only in device with ble -->
+    <uses-feature android:name="android.hardware.bluetooth_le" android:required="true"/>
+
+    <!-- use the bluetooth -->
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
+    <!-- search for new devices -->
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+    <!-- need for search for new devices for api >23 !-->
+    <uses-permission-sdk-23 android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+
+    <!-- store log files -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <!-- read log files -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+
+</manifest>
