@@ -136,6 +136,8 @@ public class DebugConsoleActivity extends AppCompatActivity {
     private static final long SENDING_TIME_OUT_MS = 1000; //ms
 
 
+    private EditText mEditSend;
+
     /**
      * create an intent for start the activity that will log the information from the node
      *
@@ -159,7 +161,7 @@ public class DebugConsoleActivity extends AppCompatActivity {
         mConsoleView = (ScrollView) findViewById(R.id.consoleView);
         mConsole = (TextView) findViewById(R.id.deviceConsole);
         mUserInput = (EditText) findViewById(R.id.inputText);
-
+        mEditSend=(EditText) findViewById(R.id.Edit_Send);
         /**
          * when the user click on the button "send" we send the message and delete the text the
          * textview
@@ -208,7 +210,44 @@ public class DebugConsoleActivity extends AppCompatActivity {
 
     }//onCreate
 
+    public   void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.Btn_Send:
+                String toSend = mEditSend.getText().toString();
+                /*
+                int Num=1;
+                byte[] sendbytes= new byte[2*Num+2];
+                short[] shorts=new short[Num];
+                sendbytes[0]='s';
+                int temp=0;
 
+                if(toSend.length()>0)
+                    shorts[0]=   (short)Integer.parseInt(toSend);
+                else shorts[0]=0;
+
+                for(int i=0;i<2*Num;i++){
+
+                        sendbytes[i + 1] = (byte) (shorts[i / 2] >> (8 - (i % 2) * 8));
+
+                    temp+=sendbytes[i+1];
+                }
+                sendbytes[1+2*Num]=(byte)(temp+sendbytes[0]);
+                System.out.println(sendbytes[1]);
+                System.out.println(sendbytes[2]);
+                try {
+                    toSend=new String(sendbytes ,"ISO-8859-1");
+                    byte[] srtbyte = toSend.getBytes("ISO-8859-1");
+                    System.out.println(srtbyte[1]);
+                    System.out.println(srtbyte[2]);
+                  }catch (Exception e){
+                          e.printStackTrace();
+                   }
+             */
+                sendMessage(toSend);
+                break;
+
+        }
+    }
 
 
     /**
@@ -459,7 +498,35 @@ public class DebugConsoleActivity extends AppCompatActivity {
 
         @Override
         public void onStdOutReceived(Debug debug, final String message) {
-            appendMessage(message, ConsoleType.OUTPUT);
+
+            /*
+            try {
+                byte[] srtbyte = message.getBytes("ISO-8859-1");
+                int[] inttemp =new int[2];
+                int Num=1;
+                int[] ints=new int[Num];
+
+                if(srtbyte[0]=='s'){
+                    for(int i=0;i<Num;i++){
+                        inttemp[0] = ((srtbyte[2*i+1]))<<8;
+                        inttemp[1] =(srtbyte[2*i+2]);
+                        if(inttemp[0]<0)inttemp[0]+=256;
+                        if(inttemp[1]<0)inttemp[1]+=256;
+                        ints[i]= inttemp[0]+ inttemp[1];
+
+                        System.out.println(((srtbyte[2*i+1]))<<8);
+                        System.out.println(srtbyte[2*i+2]);
+                    }
+                    System.out.println(ints[0]);
+                    appendMessage(String.valueOf(ints[0]), ConsoleType.OUTPUT);
+                    //   mEditSend.setText(String.valueOf(ints[0]));
+                }
+            }
+            catch (Exception e){
+                e.printStackTrace();
+            }
+            */
+            appendMessage(message+'2', ConsoleType.OUTPUT);
         }//onStdOutReceived
 
         @Override

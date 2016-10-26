@@ -7,8 +7,31 @@
                 android:layout_marginRight="@dimen/activity_horizontal_margin"
                 android:layout_marginTop="@dimen/activity_vertical_margin"
                 tools:context="com.st.BlueSTApp.DebugConsoleActivity">
-
-
+<EditText
+    android:id="@+id/Edit_Send"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_toLeftOf="@+id/Btn_Send"
+    android:layout_alignParentLeft="true"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="send"
+        android:onClick="onClick"
+        android:layout_alignParentRight="true"
+        android:id="@+id/Btn_Send" />
+    <ScrollView
+        android:id="@+id/consoleView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/inputText"
+        android:layout_below="@+id/Btn_Send"
+        android:layout_centerHorizontal="true">
+        <TextView
+            android:id="@+id/deviceConsole"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </ScrollView>
     <EditText
         android:id="@+id/inputText"
         android:layout_width="match_parent"
@@ -20,15 +43,4 @@
         android:inputType="text"
         android:labelFor="@+id/deviceConsole"
         android:singleLine="true"/>
-    <ScrollView
-        android:id="@+id/consoleView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/inputText"
-        android:layout_alignParentTop="true" android:layout_centerHorizontal="true">
-        <TextView
-            android:id="@+id/deviceConsole"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-    </ScrollView>
 </RelativeLayout>
