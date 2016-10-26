@@ -11,5 +11,6 @@ forked from [STMicroelectronics-CentralLabs](https://github.com/STMicroelectroni
 ##Update History
 ###V1.0.0 /26-Oct-2016
 * First release, Add LED remote control switch
+
 ###V1.0.0 /27-Oct-2016
 * Add send and receive test
