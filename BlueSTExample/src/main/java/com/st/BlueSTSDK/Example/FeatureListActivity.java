@@ -28,6 +28,7 @@ package com.st.BlueSTSDK.Example;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -46,6 +47,7 @@ import android.widget.Toast;
 
 import com.st.BlueSTSDK.Feature;
 import com.st.BlueSTSDK.Features.FeatureSwitch;
+import com.st.BlueSTSDK.Features.FeatureTemperature;
 import com.st.BlueSTSDK.Manager;
 import com.st.BlueSTSDK.Node;
 
@@ -386,6 +388,21 @@ public class FeatureListActivity extends AppCompatActivity implements AdapterVie
                    }
                });
            }
+            if(f.getName().equals("Temperature")){//if the Feature is Temperature
+                FeatureTemperature Temperature = mNode.getFeature(FeatureTemperature.class);
+                final float Temp = Temperature.getTemperature(sample);//get temperature
+                //System.out.println(Temp);//print the temperature
+                FeatureListActivity.this.runOnUiThread(new Runnable() {//change color in the UI thread
+                    @Override
+                    public void run() {
+                        if (Temp > 30) {//if the temperature is greater than 30 degree centigrade
+                            mFeatureList.setBackgroundColor(Color.argb(255, 255, 0, 0));//change the background to red
+                        } else {
+                            mFeatureList.setBackgroundColor(Color.argb(0, 0, 0, 0));//change the background to transprent
+                        }
+                    }
+                });
+            }
             FeatureListActivity.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
