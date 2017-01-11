@@ -19,5 +19,5 @@ forked from [STMicroelectronics-CentralLabs](https://github.com/STMicroelectroni
 ### V1.0.2 /28-Oct-2016
 * Add high temperature alarm
 
-### V1.0.3 RC /2-Jan-2017
+### V1.0.3 /11-Jan-2017
 * Add Audio transmit

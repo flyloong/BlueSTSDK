@@ -45,6 +45,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.st.BlueSTSDK.Example.FeatureListActivity"/>
         </activity>
+        <activity
+            android:name=".AudioActivity"
+            android:label="Audio"/>
+
 
     </application>
 

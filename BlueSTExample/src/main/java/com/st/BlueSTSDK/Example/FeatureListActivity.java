@@ -150,8 +150,8 @@ public class FeatureListActivity extends AppCompatActivity implements AdapterVie
         mFeatureList.setOnItemClickListener(this);
         LED = (Button) findViewById(R.id.Btn_LED);
         LED.setOnClickListener(this);
-       findViewById(R.id.Btn_Play).setOnClickListener(this);
-        findViewById(R.id.Btn_Stop).setOnClickListener(this);
+       findViewById(R.id.Btn_Audio).setOnClickListener(this);
+       // findViewById(R.id.Btn_Stop).setOnClickListener(this);
         //find the node
         String nodeTag = getIntent().getStringExtra(NODE_TAG);
         mNode = Manager.getSharedInstance().getNodeWithTag(nodeTag);
@@ -175,7 +175,9 @@ public class FeatureListActivity extends AppCompatActivity implements AdapterVie
     public   void onClick(View view){
         switch (view.getId()){
             case R.id.Btn_LED:
+
                 FeatureSwitch featureSwitch = mNode.getFeature(FeatureSwitch.class);//get Feature Switch class
+                if(featureSwitch==null)return;//BM2 does not support LED
                 if(!mNode.isEnableNotification(featureSwitch))//Ensure the Switch is EnableNotification
                     mNode.enableNotification(featureSwitch);
                 if(featureSwitch.getSwitchStatus(featureSwitch.getSample())==0){//Check the led state
@@ -185,29 +187,8 @@ public class FeatureListActivity extends AppCompatActivity implements AdapterVie
                   //  Toast.makeText(this, "on LED", Toast.LENGTH_SHORT).show();
                 }
                 break;
-            case R.id.Btn_Play:
-                if(!mNode.isEnableNotification(mNode.getFeature(FeatureAudioADPCM.class))) {//Ensure the ADPCM is EnableNotification
-                    mNode.getFeature(FeatureAudioADPCM.class).addFeatureListener(new GenericFragmentUpdate((TextView) findViewById(R.id.TextUpdate)));
-                    mNode.enableNotification(mNode.getFeature(FeatureAudioADPCM.class));//EnableNotification ADPCM
-                }
-                if(!mNode.isEnableNotification(mNode.getFeature(FeatureAudioADPCMSync.class))) {//Ensure the ADPCMSync is EnableNotification
-                    mNode.enableNotification(mNode.getFeature(FeatureAudioADPCMSync.class));//EnableNotification ADPCMSync
-                }
-                 int playBufSize = AudioTrack.getMinBufferSize(8000,AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT);
-                if(audioTrack==null)
-                audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, 8000,AudioFormat.CHANNEL_CONFIGURATION_MONO,  AudioFormat.ENCODING_PCM_16BIT, playBufSize, AudioTrack.MODE_STREAM);
-                if(!(audioTrack.getPlayState() == AudioTrack.PLAYSTATE_PLAYING))
-                audioTrack.play();
-                break;
-            case R.id.Btn_Stop:
-                if(mNode.isEnableNotification(mNode.getFeature(FeatureAudioADPCM.class))) {//Ensure the ADPCM is disableNotification
-                    mNode.getFeature(FeatureAudioADPCM.class).removeFeatureListener(new GenericFragmentUpdate((TextView) findViewById(R.id.TextUpdate)));
-                    mNode.disableNotification(mNode.getFeature(FeatureAudioADPCM.class));//disableNotification ADPCM
-                }
-                if(mNode.isEnableNotification(mNode.getFeature(FeatureAudioADPCMSync.class))) {//Ensure the ADPCMSync is EnableNotification
-                    mNode.disableNotification(mNode.getFeature(FeatureAudioADPCMSync.class));//EnableNotification ADPCMSync
-                }
-                audioTrack.stop();
+            case R.id.Btn_Audio:
+                startActivity(AudioActivity.getStartIntent(this, mNode));//start AudioActivity
                 break;
         }
     }
@@ -394,7 +375,6 @@ public class FeatureListActivity extends AppCompatActivity implements AdapterVie
         public GenericFragmentUpdate(TextView text) {
             mTextView = text;
         }//GenericFragmentUpdate
-
         /**
          * set the text view text with the feature toString value
          *
@@ -438,13 +418,6 @@ public class FeatureListActivity extends AppCompatActivity implements AdapterVie
                     }
                 });
             }
-            if(f.getName().equals("AudioFeature")){
-                FeatureAudioADPCM AudioADPCM = mNode.getFeature(FeatureAudioADPCM.class);
-                if(audioTrack!=null&&audioTrack.getPlayState()==audioTrack.PLAYSTATE_PLAYING){
-                     audioTrack.write(AudioADPCM.getAudio(sample), 0, sample.data.length);
-                }
-            }
-
             FeatureListActivity.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {

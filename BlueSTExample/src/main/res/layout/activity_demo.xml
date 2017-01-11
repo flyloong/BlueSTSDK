@@ -19,18 +19,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/Btn_LED"
-            android:visibility="gone"
+
             android:text="LED"/>
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/Btn_Play"
-            android:text="Play"/>
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/Btn_Stop"
-            android:text="Stop"/>
+            android:id="@+id/Btn_Audio"
+            android:text="Audio"/>
     </LinearLayout>
     <ListView android:id="@+id/featureList"
         xmlns:android="http://schemas.android.com/apk/res/android"
