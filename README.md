@@ -21,3 +21,6 @@ forked from [STMicroelectronics-CentralLabs](https://github.com/STMicroelectroni
 
 ### V1.0.3 /11-Jan-2017
 * Add Audio transmit
+
+### V1.0.4 /17-Jan-2017
+* Add Audio recognize

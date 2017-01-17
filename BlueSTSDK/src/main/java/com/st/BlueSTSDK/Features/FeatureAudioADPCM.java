@@ -107,7 +107,6 @@ public class FeatureAudioADPCM extends Feature {
         return false;
     }
 
-
     /**
      * set the object synchronization parameters necessary to the decompression process
      * @param manager struct which contains the synchronization parameters
