@@ -2,6 +2,7 @@ package com.st.BlueSTSDK.Example;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
@@ -9,14 +10,17 @@ import android.os.Bundle;
 
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.Toast;
 
 import com.iflytek.cloud.ErrorCode;
+import com.iflytek.cloud.GrammarListener;
 import com.iflytek.cloud.InitListener;
 import com.iflytek.cloud.SpeechConstant;
 import com.iflytek.cloud.SpeechError;
@@ -32,6 +36,7 @@ import com.st.BlueSTSDK.Node;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
@@ -42,12 +47,19 @@ import static com.st.BlueSTSDK.Example.NodeContainerFragment.NODE_TAG;
  */
 public class AudioActivity extends AppCompatActivity implements View.OnClickListener,CompoundButton.OnCheckedChangeListener{
     boolean mIsRecognizer=false;
+    boolean mIsAsr=false;
     boolean mIsPlay=false;
-    private Switch mSwitcher_BV_Recognize;
+    private Switch mSwitcher_BV_IAT;
+    private Switch mSwitcher_BV_ASR;
     private Switch mSwitcher_BV_Play;
     private Switch mSwitcher_BV_Transmit;
+    private ImageView mImageViewLED;
     // 用HashMap存储听写结果
     // 语音听写对象
+    private SharedPreferences mSharedPreferences;
+    private static final String KEY_GRAMMAR_ABNF_ID = "grammar_abnf_id";
+    // 云端语法文件
+    private String mCloudGrammar = null;
     private SpeechRecognizer mIat;
     private EditText mResultText;
     private Toast mToast;
@@ -88,17 +100,20 @@ public class AudioActivity extends AppCompatActivity implements View.OnClickList
         setContentView(R.layout.activity_audio);
         String nodeTag = getIntent().getStringExtra(NODE_TAG);
         mNode = Manager.getSharedInstance().getNodeWithTag(nodeTag);
-        mSwitcher_BV_Recognize=(Switch)findViewById(R.id.Switch_BV_Recognize);
+        mImageViewLED=(ImageView)findViewById(R.id.ImageView_LED);
+        mSwitcher_BV_IAT=(Switch)findViewById(R.id.Switch_BV_IAT);
+        mSwitcher_BV_ASR=(Switch)findViewById(R.id.Switch_BV_ASR);
         mSwitcher_BV_Play=(Switch)findViewById(R.id.Switch_BV_Play);
         mSwitcher_BV_Transmit=(Switch)findViewById(R.id.Switch_BV_Transmit);
-        mSwitcher_BV_Recognize.setOnCheckedChangeListener(this);
+        mSwitcher_BV_IAT.setOnCheckedChangeListener(this);
+        mSwitcher_BV_ASR.setOnCheckedChangeListener(this);
         mSwitcher_BV_Play.setOnCheckedChangeListener(this);
         mSwitcher_BV_Transmit.setOnCheckedChangeListener(this);
         mToast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
         mResultText = ((EditText) findViewById(R.id.iat_text));
-        // 注意： appid 必须和下载的SDK保持一致，否则会出现10407错误
         SpeechUtility.createUtility(AudioActivity.this, "appid=" + "5878e808");
-        //1.创建SpeechRecognizer对象，第二个参数：本地听写时传InitListener
+        mSharedPreferences = getSharedPreferences(getPackageName(),	MODE_PRIVATE);
+        mCloudGrammar = readFile(this,"grammar_sample.abnf","utf-8");
         mIat= SpeechRecognizer.createRecognizer(AudioActivity.this, mInitListener);
         //create or recover the NodeContainerFragment
         if (savedInstanceState == null) {
@@ -111,6 +126,8 @@ public class AudioActivity extends AppCompatActivity implements View.OnClickList
         }
         int playBufSize = AudioTrack.getMinBufferSize(8000, AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT);
             mAudioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, 8000,AudioFormat.CHANNEL_CONFIGURATION_MONO,  AudioFormat.ENCODING_PCM_16BIT, playBufSize, AudioTrack.MODE_STREAM);
+
+
     }
     @Override
     protected void onStart() {
@@ -122,7 +139,8 @@ public class AudioActivity extends AppCompatActivity implements View.OnClickList
     protected void onStop() {
         mSwitcher_BV_Play.setChecked(false);
        mSwitcher_BV_Transmit.setChecked(false);
-        mSwitcher_BV_Recognize.setChecked(false);
+        mSwitcher_BV_IAT.setChecked(false);
+        mSwitcher_BV_ASR.setChecked(false);
         super.onStop();
     }
     @Override
@@ -151,15 +169,35 @@ public class AudioActivity extends AppCompatActivity implements View.OnClickList
                     }
                 }
                 break;
-            case R.id.Switch_BV_Recognize:
+            case R.id.Switch_BV_IAT:
                 if (isChecked) {
+                    mSwitcher_BV_ASR.setChecked(false);
                     mSwitcher_BV_Transmit.setChecked(true);
                     mIsRecognizer=true;
-                    setParam();
+                    mResultText.setText("Long Form Automatic Speech Recognition"+"\n");
+                    mIsAsr=false;
+                    setParamIat();
                     mIat.startListening(mRecognizerListener);
                 } else {
                     mIsRecognizer=false;
                     mIat.stopListening();
+                    break;
+                }
+                break;
+            case R.id.Switch_BV_ASR:
+                if (isChecked) {
+                    mSwitcher_BV_IAT.setChecked(false);
+                    mSwitcher_BV_Transmit.setChecked(true);
+                    mIsRecognizer=true;
+                    mResultText.setText("Auto Speech Recognize"+ "\n"+"please say “开灯”or“关灯”");
+                    mIsAsr=true;
+                    setParamAsr();
+                    mIat.startListening(mRecognizerListener);
+                    mImageViewLED.setImageDrawable(getResources().getDrawable(R.drawable.l_0));
+                } else {
+                    mIsRecognizer=false;
+                    mIat.stopListening();
+                    mImageViewLED.setImageDrawable(null);
                     break;
                 }
                 break;
@@ -216,22 +254,41 @@ public class AudioActivity extends AppCompatActivity implements View.OnClickList
             // 错误码：10118(您没有说话)，可能是录音机权限被禁，需要提示用户打开应用的录音权限。
             // 如果使用本地功能（语记）需要提示用户开启语记的录音权限。
             showTip(error.getPlainDescription(true));
-            mIat.stopListening();
+           // mIat.stopListening();
+            if (mIsRecognizer) {
+                mIat.startListening(mRecognizerListener);
+            }
         }
         @Override
         public void onEndOfSpeech() {
             // 此回调表示：检测到了语音的尾端点，已经进入识别过程，不再接受语音输入
             showTip("结束说话");
-            if (mIsRecognizer) {
-                mIat.startListening(mRecognizerListener);
-            }
+
         }
 
         @Override
         public void onResult(com.iflytek.cloud.RecognizerResult results, boolean isLast) {
             Log.d(TAG, results.getResultString());
-            printResult(results);
+            if(mIsAsr){
+                String text ;
+                text = JsonParser.parseGrammarResult(results.getResultString());
+                if(text.equals("开灯")){
+                    mImageViewLED.setImageDrawable(getResources().getDrawable(R.drawable.l_1));
+                }else if(text.equals("关灯")){
+                    mImageViewLED.setImageDrawable(getResources().getDrawable(R.drawable.l_0));
+                }
+                mResultText.append(text);
+            }else {
+                String text ;
+                text = JsonParser.parseIatResult(results.getResultString());
+                mResultText.append(text);
+            }
             if (isLast) {
+                if (mIsRecognizer) {
+                    mIat.startListening(mRecognizerListener);
+                }
+                mResultText.append("\n");
+                mResultText.setSelection(mResultText.length());
                 // TODO 最后的结果
             }
         }
@@ -263,33 +320,34 @@ public class AudioActivity extends AppCompatActivity implements View.OnClickList
         mToast.setText(str);
         mToast.show();
     }
-    private void printResult(com.iflytek.cloud.RecognizerResult results) {
-        //  String text = results.getResultString();
-        String text = JsonParser.parseIatResult(results.getResultString());
-        String sn = null;
-        // 读取json结果中的sn字段
-        try {
-            JSONObject resultJson = new JSONObject(results.getResultString());
-            sn = resultJson.optString("sn");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        mIatResults.put(sn, text);
-        StringBuffer resultBuffer = new StringBuffer();
-        for (String key : mIatResults.keySet()) {
-            resultBuffer.append(mIatResults.get(key));
-        }
-        mResultText.setText(resultBuffer.toString());
-        mResultText.setSelection(mResultText.length());
-    }
-    public void setParam() {
+    public void setParamIat() {
         mIat.setParameter(SpeechConstant.PARAMS, null);
 //2.设置听写参数，详见《科大讯飞MSC API手册(Android)》SpeechConstant类
+        mIat.setParameter(SpeechConstant.VAD_BOS,  "10000");
         mIat.setParameter(SpeechConstant.DOMAIN, "iat");
         mIat.setParameter(SpeechConstant.LANGUAGE, "zh_cn");
         mIat.setParameter(SpeechConstant.ACCENT, "mandarin ");
         mIat.setParameter(SpeechConstant.AUDIO_SOURCE, "-1");
         mIat.setParameter(SpeechConstant.SAMPLE_RATE, "8000");
+    }
+    public void setParamAsr(){
+        int ret;
+        mIat.setParameter(SpeechConstant.PARAMS, null);
+        mIat.setParameter(SpeechConstant.VAD_BOS, "10000");
+        mIat.setParameter(SpeechConstant.AUDIO_SOURCE, "-1");
+        mIat.setParameter(SpeechConstant.SAMPLE_RATE, "8000");
+        mIat.setParameter(SpeechConstant.TEXT_ENCODING, "utf-8");
+        ret = mIat.buildGrammar("abnf", mCloudGrammar , mCloudGrammarListener);
+        if (ret != ErrorCode.SUCCESS){
+            Log.d(TAG,"语法构建失败,错误码：" + ret);
+        }else{
+            Log.d(TAG,"语法构建成功");
+        }
+//3.开始识别,设置引擎类型为云端
+        mIat.setParameter(SpeechConstant.ENGINE_TYPE, "cloud");
+//设置grammarId
+        String grammarId = mSharedPreferences.getString(KEY_GRAMMAR_ABNF_ID, null);
+        mIat.setParameter(SpeechConstant.CLOUD_GRAMMAR, grammarId);
     }
     /**
      * 初始化监听器。
@@ -304,5 +362,37 @@ public class AudioActivity extends AppCompatActivity implements View.OnClickList
             }
         }
     };
+    private GrammarListener mCloudGrammarListener = new GrammarListener() {
+        @Override
+        public void onBuildFinish(String grammarId, SpeechError error) {
+            if(error == null){
+                String grammarID = new String(grammarId);
+                SharedPreferences.Editor editor = mSharedPreferences.edit();
+                if(!TextUtils.isEmpty(grammarId))
+                    editor.putString(KEY_GRAMMAR_ABNF_ID, grammarID);
+                editor.commit();
+                //showTip("语法构建成功：" + grammarId);
+            }else{
+                showTip("语法构建失败,错误码：" + error.getErrorCode());
+            }
+        }
+    };
+    public static String readFile(Context mContext, String file, String code)
+    {
+        int len = 0;
+        byte []buf = null;
+        String result = "";
+        try {
+            InputStream in = mContext.getAssets().open(file);
+            len  = in.available();
+            buf = new byte[len];
+            in.read(buf, 0, len);
+
+            result = new String(buf,code);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
 }
 

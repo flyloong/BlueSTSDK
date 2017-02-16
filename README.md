@@ -24,3 +24,7 @@ forked from [STMicroelectronics-CentralLabs](https://github.com/STMicroelectroni
 
 ### V1.0.4 /17-Jan-2017
 * Add Audio recognize
+
+### V1.0.5 /16-Feb-2017
+* Add Auto Speech Recognize, fix the display bug
+
