@@ -28,3 +28,7 @@ forked from [STMicroelectronics-CentralLabs](https://github.com/STMicroelectroni
 ### V1.0.5 /16-Feb-2017
 * Add Auto Speech Recognize, fix the display bug
 
+### V1.1.0 /21-Feb-2017
+* Add xunfei logo
+
+

@@ -10,6 +10,7 @@ import android.os.Bundle;
 
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -27,6 +28,7 @@ import com.iflytek.cloud.SpeechError;
 import com.iflytek.cloud.SpeechEvent;
 import com.iflytek.cloud.SpeechRecognizer;
 import com.iflytek.cloud.SpeechUtility;
+import com.iflytek.sunflower.FlowerCollector;
 import com.st.BlueSTSDK.Feature;
 import com.st.BlueSTSDK.Features.FeatureAudioADPCM;
 import com.st.BlueSTSDK.Features.FeatureAudioADPCMSync;
@@ -98,6 +100,7 @@ public class AudioActivity extends AppCompatActivity implements View.OnClickList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_audio);
+        setTitle("语音技术由科大讯飞提供");
         String nodeTag = getIntent().getStringExtra(NODE_TAG);
         mNode = Manager.getSharedInstance().getNodeWithTag(nodeTag);
         mImageViewLED=(ImageView)findViewById(R.id.ImageView_LED);
@@ -109,6 +112,7 @@ public class AudioActivity extends AppCompatActivity implements View.OnClickList
         mSwitcher_BV_ASR.setOnCheckedChangeListener(this);
         mSwitcher_BV_Play.setOnCheckedChangeListener(this);
         mSwitcher_BV_Transmit.setOnCheckedChangeListener(this);
+
         mToast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
         mResultText = ((EditText) findViewById(R.id.iat_text));
         SpeechUtility.createUtility(AudioActivity.this, "appid=" + "5878e808");
@@ -126,23 +130,21 @@ public class AudioActivity extends AppCompatActivity implements View.OnClickList
         }
         int playBufSize = AudioTrack.getMinBufferSize(8000, AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT);
             mAudioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, 8000,AudioFormat.CHANNEL_CONFIGURATION_MONO,  AudioFormat.ENCODING_PCM_16BIT, playBufSize, AudioTrack.MODE_STREAM);
-
-
-    }
-    @Override
-    protected void onStart() {
-        super.onStart();
         mSwitcher_BV_Transmit.setChecked(true);
-        mSwitcher_BV_Play.setChecked(true);
+        //mSwitcher_BV_Play.setChecked(true);
     }
     @Override
-    protected void onStop() {
-        mSwitcher_BV_Play.setChecked(false);
-       mSwitcher_BV_Transmit.setChecked(false);
-        mSwitcher_BV_IAT.setChecked(false);
-        mSwitcher_BV_ASR.setChecked(false);
-        super.onStop();
+    protected void onResume() {
+        super.onResume();
+        FlowerCollector.openPageMode(true);
+        FlowerCollector.onResume(this);
     }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        FlowerCollector.onPause(this);
+    }
+
     @Override
     public void onBackPressed(){
         mNodeContainer.keepConnectionOpen(true);
@@ -313,6 +315,12 @@ public class AudioActivity extends AppCompatActivity implements View.OnClickList
     protected void onDestroy() {
         super.onDestroy();
         // 退出时释放连接
+
+        mSwitcher_BV_Play.setChecked(false);
+        mSwitcher_BV_Transmit.setChecked(false);
+        mSwitcher_BV_IAT.setChecked(false);
+        mSwitcher_BV_ASR.setChecked(false);
+
         mIat.cancel();
         mIat.destroy();
     }
