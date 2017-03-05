@@ -64,6 +64,7 @@ public class AudioActivity extends AppCompatActivity implements View.OnClickList
     private String mCloudGrammar = null;
     private SpeechRecognizer mIat;
     private EditText mResultText;
+    private EditText mLightText;
     private Toast mToast;
     private HashMap<String, String> mIatResults = new LinkedHashMap<String, String>();
     private static String TAG = AudioActivity.class.getSimpleName();
@@ -115,6 +116,7 @@ public class AudioActivity extends AppCompatActivity implements View.OnClickList
 
         mToast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
         mResultText = ((EditText) findViewById(R.id.iat_text));
+        mLightText = ((EditText) findViewById(R.id.light_text));
         SpeechUtility.createUtility(AudioActivity.this, "appid=" + "5878e808");
         mSharedPreferences = getSharedPreferences(getPackageName(),	MODE_PRIVATE);
         mCloudGrammar = readFile(this,"grammar_sample.abnf","utf-8");
@@ -176,11 +178,15 @@ public class AudioActivity extends AppCompatActivity implements View.OnClickList
                     mSwitcher_BV_ASR.setChecked(false);
                     mSwitcher_BV_Transmit.setChecked(true);
                     mIsRecognizer=true;
-                    mResultText.setText("Long Form Automatic Speech Recognition"+"\n");
+                    mResultText.setVisibility(View.VISIBLE);
+                    //mResultText.setText("Long Form Automatic Speech Recognition"+"\n");
+                    mLightText.setText("Long Form Automatic Speech Recognition");
                     mIsAsr=false;
                     setParamIat();
                     mIat.startListening(mRecognizerListener);
                 } else {
+                    mResultText.setText(null);
+                    mLightText.setText(null);
                     mIsRecognizer=false;
                     mIat.stopListening();
                     break;
@@ -191,13 +197,16 @@ public class AudioActivity extends AppCompatActivity implements View.OnClickList
                     mSwitcher_BV_IAT.setChecked(false);
                     mSwitcher_BV_Transmit.setChecked(true);
                     mIsRecognizer=true;
-                    mResultText.setText("Auto Speech Recognize"+ "\n"+"please say “开灯”or“关灯”");
+                    mResultText.setVisibility(View.INVISIBLE);
+                    mLightText.setText("Auto Speech Recognize"+ "\n"+"please say “开灯”or“关灯”");
                     mIsAsr=true;
                     setParamAsr();
                     mIat.startListening(mRecognizerListener);
                     mImageViewLED.setImageDrawable(getResources().getDrawable(R.drawable.l_0));
                 } else {
                     mIsRecognizer=false;
+                    mLightText.setText(null);
+                    mResultText.setText(null);
                     mIat.stopListening();
                     mImageViewLED.setImageDrawable(null);
                     break;

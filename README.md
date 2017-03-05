@@ -8,6 +8,7 @@ forked from [STMicroelectronics-CentralLabs](https://github.com/STMicroelectroni
 * LED remote control switch
 * Test send and receive
 * High temperature alarm
+* Xunfei ASR
 
 ## Update History
 ### V1.0.0 /26-Oct-2016
@@ -31,4 +32,6 @@ forked from [STMicroelectronics-CentralLabs](https://github.com/STMicroelectroni
 ### V1.1.0 /21-Feb-2017
 * Add xunfei logo
 
+### V1.1.1 /5-Mar-2017
+* Optimization UI
 
