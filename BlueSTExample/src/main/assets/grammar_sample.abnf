@@ -4,4 +4,4 @@ mode voice;
 
 root $main;
 $main = $place1 ;
-$place1 = 开灯|关灯;
+$place1 = 开灯|关灯|拍照|茄子|关闭;

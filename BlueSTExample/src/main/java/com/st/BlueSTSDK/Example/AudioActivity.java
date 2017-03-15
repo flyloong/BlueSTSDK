@@ -6,13 +6,20 @@ import android.content.SharedPreferences;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
+import android.net.Uri;
 import android.os.Bundle;
 
+import android.os.Environment;
+import android.os.Vibrator;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -38,6 +45,8 @@ import com.st.BlueSTSDK.Node;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -287,6 +296,32 @@ public class AudioActivity extends AppCompatActivity implements View.OnClickList
                     mImageViewLED.setImageDrawable(getResources().getDrawable(R.drawable.l_1));
                 }else if(text.equals("关灯")){
                     mImageViewLED.setImageDrawable(getResources().getDrawable(R.drawable.l_0));
+                }else if(text.equals("拍照")) {
+                    showTip("拍照");
+                    Intent intent = new Intent(AudioActivity.this, CameraActivity.class);
+                    startActivity(intent);
+//                    Intent intent = new Intent();
+//                    // 指定拍照的意图。
+//                    intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
+//
+//                    intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(Environment.getExternalStorageDirectory(),System.currentTimeMillis()+".jpg"))); // 指定保存文件的路径
+//                    startActivityForResult(intent, 100);
+
+                }else if(text.equals("茄子")){
+                    showTip("茄子");
+                    try
+                    {
+                        String keyCommand = "input keyevent " + KeyEvent.KEYCODE_CAMERA;
+                        Runtime runtime = Runtime.getRuntime();
+                        Process proc = runtime.exec(keyCommand);
+                    }
+                    catch (IOException e)
+                    {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                }else if(text.equals("关闭")){
+                    CameraActivity.instance.finish();
                 }
                 mResultText.append(text);
             }else {
@@ -411,5 +446,23 @@ public class AudioActivity extends AppCompatActivity implements View.OnClickList
         }
         return result;
     }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_photo, menu);
+
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.menu_start_photo) {
+            Intent intent = new Intent(AudioActivity.this, CameraActivity.class);
+            startActivity(intent);
+        }//else
+        return super.onOptionsItemSelected(item);
+    }//onOptionsItemSelected
+
 }
 
