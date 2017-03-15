@@ -9,6 +9,7 @@ forked from [STMicroelectronics-CentralLabs](https://github.com/STMicroelectroni
 * Test send and receive
 * High temperature alarm
 * Xunfei ASR
+* ASR Camera
 
 ## Update History
 ### V1.0.0 /26-Oct-2016
@@ -34,4 +35,8 @@ forked from [STMicroelectronics-CentralLabs](https://github.com/STMicroelectroni
 
 ### V1.1.1 /5-Mar-2017
 * Optimization UI
+
+### V1.2.0 /15-Mar-2017
+* Add Camera
+
 
