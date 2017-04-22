@@ -16,6 +16,6 @@
         app:showAsAction="ifRoom"/>
     <item
         android:orderInCategory="2"
-        android:title="V1.2.0"
+        android:title="V1.3.0"
         app:showAsAction="never"/>
 </menu>

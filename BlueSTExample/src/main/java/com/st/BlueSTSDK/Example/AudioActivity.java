@@ -126,7 +126,8 @@ public class AudioActivity extends AppCompatActivity implements View.OnClickList
         mToast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
         mResultText = ((EditText) findViewById(R.id.iat_text));
         mLightText = ((EditText) findViewById(R.id.light_text));
-        SpeechUtility.createUtility(AudioActivity.this, "appid=" + "5878e808");
+        SpeechUtility.createUtility(AudioActivity.this, "appid=" + "5878e808"); //appid号请自行申请
+
         mSharedPreferences = getSharedPreferences(getPackageName(),	MODE_PRIVATE);
         mCloudGrammar = readFile(this,"grammar_sample.abnf","utf-8");
         mIat= SpeechRecognizer.createRecognizer(AudioActivity.this, mInitListener);
@@ -376,6 +377,7 @@ public class AudioActivity extends AppCompatActivity implements View.OnClickList
         mIat.setParameter(SpeechConstant.PARAMS, null);
 //2.设置听写参数，详见《科大讯飞MSC API手册(Android)》SpeechConstant类
         mIat.setParameter(SpeechConstant.VAD_BOS,  "10000");
+        mIat.setParameter(SpeechConstant.VAD_EOS,  "0");
         mIat.setParameter(SpeechConstant.DOMAIN, "iat");
         mIat.setParameter(SpeechConstant.LANGUAGE, "zh_cn");
         mIat.setParameter(SpeechConstant.ACCENT, "mandarin ");
@@ -386,6 +388,8 @@ public class AudioActivity extends AppCompatActivity implements View.OnClickList
         int ret;
         mIat.setParameter(SpeechConstant.PARAMS, null);
         mIat.setParameter(SpeechConstant.VAD_BOS, "10000");
+        mIat.setParameter(SpeechConstant.VAD_EOS,  "0");
+        mIat.setParameter(SpeechConstant.ASR_PTT,  "0");
         mIat.setParameter(SpeechConstant.AUDIO_SOURCE, "-1");
         mIat.setParameter(SpeechConstant.SAMPLE_RATE, "8000");
         mIat.setParameter(SpeechConstant.TEXT_ENCODING, "utf-8");

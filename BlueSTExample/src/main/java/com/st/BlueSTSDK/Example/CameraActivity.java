@@ -53,7 +53,6 @@ public class CameraActivity extends AppCompatActivity {
         mPreview = new CameraPreview(this, mCamera);
         FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
         preview.addView(mPreview);
-
     }
     /** A safe way to get an instance of the Camera object. */
     public static Camera getCameraInstance(){
@@ -86,6 +85,7 @@ public class CameraActivity extends AppCompatActivity {
             } catch (IOException e) {
                 Log.d(TAG, "Error accessing file: " + e.getMessage());
             }
+            mCamera.startPreview();
         }
     };
     /** Create a file Uri for saving an image or video */
@@ -131,6 +131,7 @@ public class CameraActivity extends AppCompatActivity {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_CAMERA) {
             mCamera.takePicture(null, null, mPicture);
+            setTitle("say:茄子,saved："+new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()));
             Vibrator  vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
             vibrator.vibrate(1000);//振动1秒
             return true;
@@ -149,12 +150,13 @@ public class CameraActivity extends AppCompatActivity {
         int id = item.getItemId();
         //noinspection SimplifiableIfStatement
         if (id == R.id.menu_start_photo) {
+
             mCamera.takePicture(null, null, mPicture);
+            setTitle("say:茄子,saved："+new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()));
             Vibrator  vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
             vibrator.vibrate(1000);//振动1秒
             return true;
         }//else
         return super.onOptionsItemSelected(item);
     }//onOptionsItemSelected
-
 }

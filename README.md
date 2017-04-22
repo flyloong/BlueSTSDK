@@ -9,7 +9,8 @@ forked from [STMicroelectronics-CentralLabs](https://github.com/STMicroelectroni
 * Test send and receive
 * High temperature alarm
 * Xunfei ASR
-* ASR Camera
+* ASR bulb control
+* ASR self-shoting control
 
 ## Update History
 ### V1.0.0 /26-Oct-2016
@@ -37,6 +38,9 @@ forked from [STMicroelectronics-CentralLabs](https://github.com/STMicroelectroni
 * Optimization UI
 
 ### V1.2.0 /15-Mar-2017
-* Add Camera
+* Add ASR bulb control
+
+### V1.3.0 /21-April-2017
+* Add ASR self-shoting control, improve recognition speed
 
 
